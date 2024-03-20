@@ -1,0 +1,129 @@
+1) I have read the Course Syllabus for CS 471, Programming Languages.
+
+Jason Scott Homework 1
+
+2) Some programming languages are more powerful than others. This is because many languages are created with a specific purpose and are made to make that purpose easier to do than other languages. Because of this, that given language will be more powerful at doing that thing than other languages. Other metrics like some languages being Turing Complete and Homoiconicity are evidence that some languages have more ability than others.
+
+3) a: (1|0)* 1+ 0(0+)
+b: 1(1+) 0+
+c: (1|0)* (101) (1|0)* 1
+d: I believe this question does not have a solution because you cannot have a regex that appends 2 1's for every 0.
+
+4) 
+a) Leftmost derivation of 01|1*
+re
+re re
+0 re
+0 re | re
+0 1 | re
+0 1 | re *
+0 1 | 1 *
+b) Another way to get to 01|1* is
+re 
+re re
+re re | re
+re re | re *
+0 re | re *
+0 re | 1 *
+0 1 | 1 *
+proving this grammar is ambigous.
+
+5)
+a) If this grammar was directly used in a recursive-descent parser it would not work because recursive-descent parsers cannot handle grammars with left-recursive rules, and in this grammar the parser would not understand whether an expr should be evaluated to expr @ term or term because it's difficult to determine with just the lookahead. 
+
+b) This is not a satisfactory way of converting the grammar because although rewritten production rule would make the language right recursive and work for a recursive descent parser, you would be changing the associativity and language as a whole so it would not be satisfactory.
+
+6)
+
+<A>::= <A>'|'<B> | <B>
+<B>::= <B><C> | <C>
+<C>::= <C>'*' | <D>
+<D>::= '('<A>')'| <E>
+<E>::= 0 | 1 | /epsilon
+
+7) 
+EBNF conversion
+<A>::= <B>('|'<B> )*
+<B>::= <C>(<C>)*
+<C>::= <D>('*')?
+<D>::= ('('<A>')')* | <E>
+<E>::= 0 | 1 | /epsilon
+
+Token lookahead;
+void A{
+  B();
+  if(lookahead == '|'){
+    match('|');
+    B();
+  }
+}
+
+void B{
+  C()
+  if(lookahead == 'C');
+  match('C');
+  C();
+  }
+}
+
+void C{
+  D();
+  if(lookahead == '*'){
+    match('*');
+  }
+}
+
+void D{
+  if(lookahead == '('){
+    match('(');
+    A();
+    match(')');
+  }else{
+    E();
+  }
+}
+
+void E{
+  if(lookahead == '0'){
+    match('0');
+  }else if(lookahead == '1'){
+    match('1');
+  }else{
+    match('');
+  }
+}
+
+  8) a)
+  <expr> ::= <term> + <expr> | <term>
+  <term> ::= <factor> * <term> | <factor>
+  <factor> ::= '(' <expr> ')'| <number>
+  <number> ::= [0-9] <number> | /epsilon
+
+
+  b) I believe the grammar is right recursive, this means for * and + when you do something like A+B+C, B+C will be added together first then added to A. Same applies for the * function.
+  
+  c)
+  <expr> ::= <term> + <expr> | <term>
+  <term> ::= <sub> - <term> | <sub>
+  <sub> ::= <div> * <sub> | <divd>
+  <divd> ::= <factor> / <divd> | <factor>
+  <factor> ::= ( <expr> )| <number>
+  <number> ::= [0-9] <number> | /epsilon
+    
+9)
+a)
+  <expr> ::= <term>(+ <term>)*
+  <term> ::= <factor>(* <factor>)*
+  <factor> ::= (( <expr> ))* | <number>
+  <number> ::= [0-9] <number> | /epsilon
+
+b) with this change the grammar is now left recursive, so for operators on something like A * B * C, A * B will be computed first before being multipled by C.
+c)
+  <expr> ::= <term>(+ <term>)*
+  <term> ::= <sub>(- <sub>)*
+  <sub> ::= <divd>(* <divd>)*
+  <divd> ::=<factor>(/ <factor>)*
+  <factor> ::= (( <expr> ))* | <number>
+  <number> ::= [0-9] <number> | /epsilon
+
+
