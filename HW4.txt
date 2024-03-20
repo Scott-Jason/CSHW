@@ -1,0 +1,239 @@
+Jason Scott 471 HW #4
+Please submit written answers in a single text file, with the extension .txt.
+
+Some questions are adapted from Programming Language Pragmatics, by Michael L. Scott.  Scoping is covered in Chapter 3.
+You are encouraged to read Sections 3.1 to 3.5.
+
+The pseudocode in this assignment uses
+    x : integer := Y
+to denote declaring a variable x, and binding it to the value Y.
+Writing
+    x := Y
+binds an existing variable x.
+
+print a, b should print the value of the variables a and b separated by a comma
+
+1) Indicate the binding time for each of the following decisions in Prolog.  Explain your answers:
+
+a) The total amount of space consumed by program code and data.
+
+ANS: The total amount of space consumed by program code and data is binded at Load Time, this is when the OS loads the entire program into memory.
+
+b) The ":-" symbol.
+
+ANS: The :- symbol in prolog would be binded during Language Design Time because :- is a symbol that was chosen when prolog was designed. 
+
+c) The name "descendant", as in the descendant relation defined in the class slides.
+
+ANS: The name descendant to define a relation would be binded during Program writing time because the user would be creating descendant as a name of a predicate/not really but sort of function in prolog.
+
+d) The binding of X to y, when applying the rule
+    reachable(X, Z) :- edge(X, Y), reachable(Y, Z).
+
+to the query:
+    ?- reachable(y, w).
+
+ANS: The binding of X to y from the query would happen at Run Time because that's when variables are bound to values.
+
+
+2) Give an example of a program in a C-like pseudocode that would not work if variables were allocated statically.  Explain your answer.  Your explanation should note a specific example computation that would go wrong if variables were statically allocated. You may provide your explanations as a separate written paragraph, or as comments in the code.
+
+ANS: 
+int timesTwo = 3;
+
+int Double(int x){
+    return x*timesTwo;
+}
+
+timesTwo = 2;
+int ans = Double(2);
+printf(ans);
+
+//here is an intricate function that doubles a number or multiplies it by 2. If Variables are allocated statically, timesTwo will keep the 3 value and Double() will return a tripled value. If variables are allocated dynamically, when Double() is called, timesTwo will take the value 2 and it will output a doubled number as intended.
+
+
+3) Janet has written the following list manipulation library in C:
+
+    typedef struct list_node {
+        void* data;
+        struct list_node* next;
+    } list_node;
+
+    list_node* insert(void* d, list_node* L) {
+        list_node* t = (list_node*) malloc(sizeof(list_node));
+        t->data = d;
+        t->next = L;
+        return t;
+    }
+
+    list_node* reverse(list_node* L) {
+        list_node* rtn = 0;
+        while (L) {
+            rtn = insert(L->data, rtn);
+            L = L->next;
+        }
+        return rtn;
+    }
+
+    void delete_list(list_node* L) {
+        while (L) {
+            list_node* t = L;
+            L = L->next;
+            free(t->data);
+            free(t);
+        }
+    }
+
+a) New team member Brad is familiar with Java, and writes the following code in the main loop of his program:
+
+    list_node* L = 0;
+    while (more_widgets()) {
+        L = insert(next_widget(), L);
+    }
+    L = reverse(L);
+
+After running for awhile, Brad's program always runs out of memory and crashes. What incorrect expectation does Brad have? What is going wrong and causing the crash?
+
+ANS: Because Brad is familiar with Java, he wrongly assumes when working in C that this language also has a garbage collector, which is not the case. In his code, when L is binded to the value of reverse(L), the initial value of L is still in memory not freed. This is causing a buildup that leads to the crash. 
+
+b) Janet explains the problem to Brad, and he updates his code:
+    list_node* L = 0;
+    while (more_widgets()) {
+        L = insert(next_widget(), L);
+    }
+    T = reverse(L);
+    delete_list(L);
+    L = T;
+
+This solves the insufficient memory problem, but unfortunately now the program seems to produce incorrect and strangely corrupted results.  What is wrong now?
+
+ANS: The delete_list(L) fixes the insufficient memory, but also deletes the linked list nodes associated with L, so T is a linked list  with nodes that have just been deleted now., so when he does the line L = T, L is being binded to a linked list whose elements are in random places in memory, which could be the cause of the incorrect and corrupted results.
+
+
+4) Consider the following pseudocode:
+    procedure main()
+
+        a : integer := 1
+        b : integer := 2
+
+        procedure middle()
+            b : integer = a
+
+            procedure inner()
+                print a, b
+                a : integer := 3
+
+            inner()
+            print a, b
+
+        middle()
+        print a, b
+
+Consider each of the following scoping rules.  Indicate if the program will have static semantic errors.  If it will not, what will the program print?  Explain your answers
+
+a) C style declaration rules- names must be declared before use, and the scope of a name extends from its declaration through the end of the current block.
+
+ANS: With C style declaration rules, this program will not have static semantic errors. The program will first print from the inner() call 1, 1, a’s value will be taken from main() scope and the b’s value will be taken from middle() scope.  Then it will print again from under the inner call 1,1, a’s value being taken from main(), and b still being taken from middle’s scope. Finally from under the middle call 1,2 will print, with values of a and b being taken from main’s scope. 
+
+b) C# style declaration rules- names must be declared before use, and the scope of a variable is the entire block in which it is declared.
+
+ANS: With C# style declaration rules, because names must be declared before use and the scope of a variable is the ENTIRE block it’s declared in, in procedure inner(), a is being used before it’s declared immediately under it, creating a static semantic error.
+
+c) Modula-3 - names can be declared in any order at any time, and there scope is the entire block in which they are declared.
+
+ANS: With Modula3 style declaration rules, there will not be static semantic errors. The program will first print from the inner() call 3,3, with a being 3 from below it and b being 3 from middle’s scope where b is binded to a’s value. The second print from below inner call will be 1, 1, with a’s value coming from main’s scope and b’s value coming from middle’s scope. The last print will be 1,2 with a and b’s values coming from main’s scope.
+
+5) A common argument in favor of dynamic scoping is that it allows reuse and customization of subroutines.  Suppose we have a subroutine print_integer,
+which can print its input in a variety of basis (binary, decimal, hexadecimal, etc.)  Usually, we want to use decimal, and so we do not want to always
+have to specify decimal.  Instead, we want to default to decimal, and, in the rare case we want hexadecimal, we will write the following code:
+    
+    print_base : integer := 16
+    print_integer(n)
+
+The counterargument is that there are usually other ways to achieve the same effect without dynamic scoping.  Describe at least two ways without dynamic typing to be able to print integers in a variety of bases, while allowing print_integer(n) to print n in decimal notation.
+
+ANS: I think one way could be using default parameters, where if it's just one parameter it will print the value n in decimal notation, but there could be a second default parameter of print_base you can set to 16 if you wanted to print hexadecimal. It would look like print_integer(n, print_base = 10){ print int}.  For hexadecimal you would call it like print_integer(n, 16). 
+
+ANS: Another way to achieve this effect would be by overloading the function print_integer. This implementation would require 2 function definitions of print_integer and would look something like
+print_integer(n){
+print n in decimal form
+print n
+}
+and 
+print_integer(n, print_base){
+do something to n with print_base
+print n
+}
+That way the default one parameter still prints decimal and another parameter can be added for other variations.
+
+
+6) 
+Consider the following pseudocode:
+
+   x : integer := 9
+   y : integer := 20
+   procedure add()
+         x := x + y
+   procedure second(P : procedure)
+         x : integer := 3
+         P()
+   procedure first()
+         y : integer := 2
+         second(add)
+
+   first()
+   print x
+
+a) What does this program print if the language uses static scoping?  Briefly explain.
+
+ANS: This program would print 29 if the language used static scoping because at the point where add() is defined, x has the value of 9 and y has the value of 20, so when add() is eventually called through first(), x would equal 29 before being printed.
+
+b) What does this program print if the language uses dynamic scoping with deep binding?  Briefly explain.
+
+ANS: If the program uses dynamic scoping and deep binding, we will look where our program passes (add) as an argument to find whats being binded, that would be in first(), so y is binded to 2 and x would be binded to 9 because there are no declarations of x inside first, meaning that when x is printed it would be 11 after add() is called. 
+
+
+c) What does this program print if the language uses dynamic scoping with shallow binding?  Briefly explain.
+
+ ANS: If the program uses shallow binding, we will look where our program calls add(), or in second(), and from here shallow binding will bind the value of 3 to x and go up one static link to first() and bind y to the value 2, meaning it will print 5 after add() is called.
+
+7) Give three concrete example programs in three different languages of your choosing in which a variable is live but not in scope.  Briefly explain each example.
+
+1)
+C++
+int var = 3;
+void example_func(){
+	int var = 2;
+ 	cout << var << endl;
+}
+example_func();
+
+In this brief example, when we are in the example_func environment, the global var = 3 is still live, but not in example_func’s scope because a different int var = 2 was declared. 
+
+2)
+Python
+x = 3 
+def f(x):
+  x = x+1
+  print(x) // will print 4
+  return x           
+print( f(x ) )
+print(x) // will print 3
+
+In this example, because x is the name of an argument of subroutine f and the name of a global variable, when x is being passed into f(x), global x is live but not in the scope of f(x). 
+
+3)
+Swift
+    var s = 10;
+    if( s == 10){
+      var s = 9;
+      print(s); // prints 9
+    }
+    print(s); //prints 10
+
+Here inside the conditional a variable is being created with the same name as our global s, and when we call print inside the conditional on s it prints 9, but the global s is still live as you can see by the print after the conditional ends.
+
+
+
+
+
