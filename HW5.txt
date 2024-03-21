@@ -1,0 +1,183 @@
+Questions are adapted from Programming Language Pragmatics, by Michael L. Scott.
+Jason Scott HW5
+
+Please submit written answers in a text file, with the extension .txt.  Please zip your text file with the modified Perl program requested by question (3b).  You do not need to submit code for any other questions.
+
+The first three questions involve C#, Ruby, and Perl.  It is possible you do not have experience with all these languages.  You are welcome (and expected) to use reference books or internet resources to figure out what you need to know about the meanings of the programs.  Keep in mind that you do not need an incredibly in-depth knowledge or understanding of any of these languages to answer these questions adequately.
+
+1) C# has sophisticated support for first-class subroutines.  It allows delegates to be instantiated from anonymous nested methods, and gives local variables and parameters unlimited extent when they are needed by such a delegate.  Consider the provided C# program, test.cs.
+
+	a) What does this program print?
+	Answer: The program prints 5 then 7. 
+
+	b) Which of a, b, c, and d, if any, are likely to be statically allocated?  Which could be stack allocated?  Which must be allocated on the heap?  Explain.
+        Answer: the static keyword when instantiating "a" will mean that it is statically allocated. Because c and d are local variables and parameters they are allocated on the stack. Finally b will be allocated on the heap because it creates a delegate that might be called past the b methods lifecycle. 
+
+
+
+2)
+	a) Examine and run the provided Ruby program, test.rb.  What does the output suggest about the scope of nested blocks in Ruby? 
+        Answer: The output of 3, 3 suggests that the nested blocks in Ruby are dynamically scoped.
+
+	b) Comment out line 2 of the program (that is, the "y = 2" line.)  Rerun the program.  Based on the output, can you make your claim      about scoping from (a) more precise?
+       Answer:The program outputs one 3 from the print x and throws an error when running print y because y was never declared in the outside scope, meaning y=3 turns into a local variable and its life ends when it gets out of the bar call, so nothing can be printed for y.
+
+3) Run the provided Perl program, test.pl.
+
+	a) What is the output?  What is (potentially) surprising about the output?
+         Answer:The output is 2, 2, this is surprising because foo(2); should print 2 but foo(3) should print 3.
+
+	b) Modify the code to create a reference to an anonymnous local subroutine and verify that it creates closures correctly.  Submit the modify code.
+
+
+	c) Add the line "use diagnostics;" to the beginning of the original version of the program, and rerun the program.  Based on the explanation this will give you, speculate as to how nested named subroutines are implemented in Perl 5.
+         Answer:Because of the way the diagnostics recommend I fix my issue, im assuming when foo(2) is called, $lex is binded to that value statically, so when foo(3) is called the print statement still prints 2 instead of the new value it should be 3. 
+
+4) Read Dijkstra's "Go to Statement Considered Harmful" and Rubin's '"GOTO Considered Harmful" Considered Harmful',
+contained in gotodebate.pdf.
+
+    a) Summarize the positions presented in both letters. What arguments or evidence do they present to support their position? 
+    
+   Answer: Dijkstra's position is that GOTO is harmful because it makes the variables in the program lack less meaning when GOTO is being employed. He talks about having a variable n be a counter of the number of people entering a room, if GOTO is used, how could this value still be binded to the right value if it can just go to random parts of the program, making n no longer represent what it wants to. He also mentions Giuseppe Jacopin's logical superfluousness of goto, which I cannot talk on. Rubin's argument is that goto is an efficient tool that has risk with it, but if used correctly makes programming more efficient. The main piece of evidence he uses is tasking developers with a matrix problem and asking them to solve it, and he notes the people using GOTO do it in less lines and complexity than those without GOTO. He also notes that he has yet to see a credible study showing that GOTO creates the complexity that people say it does.
+
+    b) Which letter do you believe presents a stronger argument?  Justify your position.
+
+    Answer: It could be partially due to the fact that I could comprehend Rubin's letter way more than Dijkstra's, but I think he has the stronger argument. Dijkstra talks a lot about the dangers in a conceptual manner, but Rubin acknowledges the dangers and says that it's just up to the programmer to take the necessary precautions in order to take the benefits of the less amount of total code written and less complexity needed. I really enjoy Rubin's analogy of it's like asking a butcher to not use a knife for fear he might cut himself. Reminds me of an argument you might hear about pointers in C++.
+
+For those who are interested, gotodebate_extended.pdf includes further letters regarding goto sent to ACM communications-
+you are not required to read these letters.
+
+5)
+    a) The C "and" and "or" operators short circuit.  Give an example of a C program that would give a different answer if these operators did not short circuit.  Explain why the answer would be different.
+
+Answer:
+#include <stdio.h>
+
+int var = 0;
+
+int func1(){
+ if(var == 0){
+   var++;
+   return 1;
+ }
+ return 0;
+}
+
+int func2(){
+ if(var == 4){
+   return 1;
+ }
+ return 0;
+ }
+
+int main() {
+ if(func2() && func1()){
+   //something
+ }
+ printf("%d", var);
+}
+// in this short program, in the main if statement func2() is false so it short circuts and never runs func1(), which would of added one to var, so the program prints 0 instead of 1 for the value of var.
+
+
+    b) Give an example of a C program containing some function f in which the order of evaluation of f's subroutine parameters changes the output of the program.
+
+Answer:
+#include <stdio.h>
+
+int x = 3;
+
+int func1(int* x){
+ *x *= -1;
+ *x -= 4;
+ return *x;
+}
+
+int func2(int* x){
+  *x*= 3;
+  return *x;
+
+}
+
+int f(int x, int y){
+   return x+y;
+}
+
+int main() {
+  printf("%d", f(func1(&x),func2(&x))); 
+
+  //here if func2 evaluates before func1 you get an output of -4,
+  //but if func1 evaluates before func2 you get an output of -28.
+}
+
+    Rewrite the program to still involve a call to f, but deterministically produce one output or the other.  Do not change the definition of f.
+
+Answer:
+#include <stdio.h>
+
+int x = 3;
+int a;
+int b;
+
+int func1(int* x){
+ *x *= -1;
+ *x -= 4;
+ return *x;
+}
+
+int func2(int* x){
+  *x*= 3;
+  return *x;
+
+}
+
+int f(int x, int y){
+   return x+y;
+}
+
+int main() {
+  a = func1(&x);
+  b = func2(&x);
+  printf("%d", f(a,b)); 
+
+}
+
+This program can be deterministically produced if you put the func1 and 2 results in variables before placing them in function f. Then whatever order you create those variables in will be the output you get. This deterministically produces -28.
+
+
+6) Loop unrolling is a code transformation that replicates the body of a loop and reduces the number of iterations, thereby decreasing the overhead of a loop.  Loop unrolling is often performed by compilers, but in timing critical situations can also be done by hand. Unfortunately, if we replicate the body of a loop k times, we must deal with the possibility that the original number of loop iterations, n, may not be a multiple of k.
+
+Consider:
+    i = 0;
+    do {
+        sum += A[i]; squares += A[i] * A[i]; i++;
+    } while (i < N)
+
+
+to unroll this loop, we may write:
+    i = 0; j = N / 4;
+    do {
+        sum += A[i]; squares += A[i] * A[i]; i++;
+        sum += A[i]; squares += A[i] * A[i]; i++;
+        sum += A[i]; squares += A[i] * A[i]; i++;
+        sum += A[i]; squares += A[i] * A[i]; i++;    
+    } while (--j > 0);
+    do {
+        sum += A[i]; squares += A[i] * A[i]; i++;
+    } while (i < N)
+
+
+In 1983, Tom Duff of LucasFilm "simplified this code" by inventing what is now known as "Duff's device":
+    i = 0; j = (N + 3) / 4;
+    switch ( N %4) {
+        case 0: do { sum += A[i]; squares += A[i] * A[i]; i++;
+        case 3:      sum += A[i]; squares += A[i] * A[i]; i++;
+        case 2:      sum += A[i]; squares += A[i] * A[i]; i++;
+        case 1:      sum += A[i]; squares += A[i] * A[i]; i++;    
+        } while (--j > 0);
+    }
+
+
+Briefly explain how Duff's device works.  In the above example, if N = 11, how many times will the loop iterate?  On each iteration, how many times will sum, squares, and i be modified?
+
+Answer:Duff's device works by using loop unrolling and saving a little bit more time by using a switch statement to only execute a remainder N%k # operations extra provided there is a remainder. operations before remaining inside the do while loop with j. For N = 11, the loop will iterate 3 times, and sums,squares, and I will be modified only 11 times. 3 times on the first loop due to it going to case 3, and 4 times on the second two loops. This sort of reminds me of goto argument, should this be allowed? This looks gross.
+
