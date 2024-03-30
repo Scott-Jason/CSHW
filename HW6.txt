@@ -1,0 +1,109 @@
+Some questions are adapted from Programming Language Pragmatics, by Michael L. Scott.
+Jason Scott HW6
+
+Please submit written answers in a text file, with the extension .txt.  The solutions to (1) and (3) should be submitted as a separate files.
+
+1) Bentley [Ben, Chapter 4] provides the following informal description of a binary search:
+        We are to detemine whether the sorted array X[1..N] contains the element T....  Binary search solves the problem by keeping
+        track of a range within the array in which T must be if it is anywhere in the array.  Initially, the range is the entire array.
+        The range is shrunk by comparing its middle element to T and discarding half the range.  The process continues until T is
+        discovered in the array or until the range in which it must lie is known to be empty.
+
+    Write code for binary search in an imperative programming language of your choice.  Note the name of a the language in a comment at
+    the top of the file. What loop construct(s) did you find to be useful?  Why these loop constructs, and not others?
+
+    As a side note, when Bentley asked more than a hundred professional programmers to solve this problem, Bentley found that only
+    about 10% got it right the first time, without testing.
+
+[Ben] John L. Bentley.  Programming Pearls.  Addison-Wesley Professional, 2000.  First edition, 1996
+
+
+2) C++ and Java loops can be written with empty bodies by placing all side effects into the tests, such as in the following two examples:
+
+Example 1:
+    int i = 0;
+    while (a[i++] != 0);
+
+Example 2:
+    int i = 0
+    for (i = 0; a[i] != 0; i++);
+
+Are these loops equivalent? Explain.
+
+Yes these two loops are equivalent, they both instantiate an int i to 0 and they both execute their empty bodies until a[I] is 0. Both loops also increment I by 1.
+
+3) Consider the BinTree Python class shown below.  The code below defines a preorder traversal of a binary tree, using the yield keyword.
+
+class BinTree:
+    def __init__(self):
+        self.data = self.lchild = self.rchild = None
+
+    # insert, lookup, etc.
+
+    def preorder(self):
+        if self.data != None:
+            yield self.data
+        if self.lchild != None:
+            for d in self.lchild.preorder():
+                yield d
+        if self.rchild != None:
+            for d in self.rchild.preorder():
+                yield d
+
+a) Explain the behavior of the yield keyword. We did not cover this in class- cite any sources you use.
+	
+The yield keyword signifies that the python function being created is a generator function, which I've learned can be used like an iterator object. From what I've gathered the yield keyword differs from the standard return keyword because return signifies the termination of that function, whereas yield only pauses the function, allowing the user to call it again later.
+https://www.geeksforgeeks.org/python-yield-keyword/ 
+
+b) Write inorder and postorder iterators for BinTree, making use of the yield keyword.
+Attached 
+
+4) Assume the "type" keyword is used to introduce a type alias.  Consider the following:
+
+type coffee = struct { variety : string, weight : float }
+type plant = struct { variety : string, weight : float }
+type person = struct { name : string, weight : float }
+
+Which of these types:
+
+coffee
+plant
+person
+array [1..10] of coffee
+array [1..10] of plant
+array [1..10] of person
+
+would a compiler likely consider to have equivalent types under
+
+    (a) structural equivalence?
+While the exact definition for structural equivalence varies language to language, because coffee, plant, and person aliases all contain a string and a float, I believe they would all be structurally equivalent. In the same vein, because the three arrays are arrays of 1..10 of the same 3 aliases, I think all the arrays would also be structurally equivalent.
+
+    (b) strict name equivalence?
+Under strict name equialence, the aliased types are distinct, so the compiler would likely consider none of the types are equivalent.
+
+    (c) loose name equivalence?
+Under loose name equivalence, coffee and plant as well as the array of coffee and the array of plant would be considered equivalent.
+
+Briefly justify your answers.
+
+5) Describe the difference between type equivalence and type compatibility.
+
+In my mind type equivalence means that two types are fundamentally the same and there will be no extra work needed when operations are performed on two equivalent types. Type compatibility on the other hand are close enough types, but when certain operations are performed on two compatible types, often extra work will be needed to make one of those types act like the other and complete the operation.
+
+6) What is type inference?  Explain three contexts in which type inference occurs?
+
+Type inference is the set of rules that determine an expressions type based on its parts or the context it's used in.
+1) type inference occurs when two subranges types are tried to be added to one another, where the inference results in the subranges base type.
+2) In certain languages variable declaration can have type inference, i.e. var i = 12 <-- inferred the type of I is int.
+3) In lambda expressions, the return value can be determined using type inference of the parameters and the operations that happen to the parameters in the body of the lambda expression.
+
+
+7) What is the type of n in the following ML program? What is the type of sum?
+Write a sentence or 2 explaining how a compiler would deduce your answers to this question.
+
+let rec sum n = if n > 0 then n + sum (n - 1) else 0
+
+Type of n : int
+Type of return of sum : function that takes an int parameter and returns an int
+The compiler would figure out n is an int by looking at the context which n is used in, and because n > 0 happens in the body and 0 is of type int, the compiler would say n is an int.
+The compiler would see the rec keyword and figure out that sum is a recursive function and see n so the compiler knows it takes a parameter n. Then from the same diagnoses from the before it would see that n is an integer and understand that sum takes an integer and returns one as well.
