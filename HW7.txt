@@ -1,0 +1,120 @@
+Jason Scott Homework 7 471
+Some questions are adapted from Programming Language Pragmatics, by Michael L. Scott.
+
+Please submit written answers in a text file, with the extension .txt.
+
+1) Consider the below pseudocode:
+
+    int a = 0, b = 1;
+
+    def f(int x, int y) {
+        x = 4;
+        print a;
+    }
+
+    def g(int x, int y) {
+        y = 5;
+    }
+
+    f(a, b)
+    g(a, b)
+
+    print a;
+    print b;
+
+What does the program output when run with
+    a) call-by-value? Prints  (0, 0, 1)
+    b) call-by-reference? ( 4, 4, 5)
+    c) call-by-value/restore (0, 0, 1)
+
+2) Suppose you are working in a language in which all parameters must be passed by name.  Can you write a subroutine swap(x, y), which swaps the values of its actual parameters?
+Yes, because call by name literally takes the actual parameter and substitutes it in the appropriate spots, it can function similarly to call by reference and actually swap the values of x and y even after the subroutine is done executing.
+
+3) Either:
+- in pseudocode, give an example of a program which will print the same output with call-by-value and call-by-value/restore, but a different output with call-by-reference
+Or:
+- explain why writing such a program is not possible.
+
+int x = 3, y = 2;
+func f(int a, int b){
+    a = 10000;
+  b = 10000;
+}
+
+f(x,y);
+
+print (x);
+print(y);
+
+In my program above, for call by value and call by value restore, this program will output 3,2, however, if call by reference was used, then it would print 10000, 10000.
+
+4) (a) An invariant is a property maintained by some code.  That is, it is a property that is
+    always true.  Describe (in a sentence or two) the invariant maintained by a binary search tree.
+
+    The invariant maintained by a Binary Search tree is that the left subtree of a node will all have values less than that node, and the right subtree of the same node will all have values greater than it.
+  
+    (b) Suppose you were implementing a binary search tree in C++.
+What mechanism of object oriented programming allows you to ensure the invariant is maintained? Briefly explain how you would use this mechanism when specifically implementing a binary  search tree. 
+
+The overarching mechanism of encapsulation is what allows us to ensure the invariant is maintained. This is because we can use encapsulation to define the behavior of how keys are inserted and where they will go in the BST, that way whenever a new node must be added to our tree, the defined behavior of insertion and deletions will ensure the invariant is maintained even after the actions are run. For example,  when implementing a BST, if we define that new nodes with values less than the current node will go into the left subtree and new nodes with values greater than the current node will go to the right subtree, then we will insure the invariant from part a is always maintained while the tree is mutated.
+
+5) Justify your reasoning for both (a) and (b).
+
+   (a) Give an example of a case where you would choose to derive some class B from a class A, rather than including a member field of type A in B.
+
+If I wanted to make classes to represent animals of the world for a zoo app I was making, I would want to derive all the new animals from a base class Animal which would have a bunch of fields that would apply to that animal and I could add a few unique fields to a particular new animal.
+
+   (b) Give an example of a case where you would choose to include a member field of type A in class B, rather than deriving class B from class A.
+
+In the case where I wanted to add a field that applies to all of my base class objects, then I would rather add a member field to base class A instead of deriving a new class. For example if I wanted to add the age of the animals, I would add an int age field to base class A instead of deriving a new class that adds age field to it. 
+
+6) Eiffel is a statically type object-oriented programming language with multiple inheritance and garbage collection.  As opposed to C++, why might destructors be:
+    (a) less necessary in Eiffel?
+    Destructors would be less necessary because the garbage collector in Eiffel would probably do the job that calling a destructor would do, making the destructor call sort of worthless. C++ doesn’t have one which makes sense why destructors are common and necessary.
+    (b) less useful in Eiffel?
+Because of Eiffels use of Multiple Inheritance, a destructor destructing all the derived classes on an object would impact the program negatively because those derived classes might still be parents to different objects still active in the program, causing negative/ unexpected things to occur.
+
+7) Python does not allow classes to have private fields.
+
+    a) We discussed three major features of objected-oriented languages: encapsulation, inheritance, and  dynamic method binding.  Which of these three features is most directly impacted by this limitation of Python?  Briefly explain your answer.
+
+	I think the decision from Python to not allow classes to have private fields mostly impacts the encapsulation of code principal of OOP. Having private fields helps hide unnecessary / dangerous components from users, and other classes might accidentally alter important fields that should not be altered. 
+
+    b) Provide an argument that Python/Python programmers would benefit from private class fields being added to the language.
+
+	After doing a small amount of research, it seems that python programmers have already adopted a sort of workaround to private class fields, where they will name a field with a convention like _private_example in order to let other people viewing their python code know not to use this field in other classes. I think because this exists in the python culture, adding a private keyword would be helpful because then the program will forcibly ensure other classes cannot use that field, and again would prevent errors where maybe a secondary party trying to add code didn’t notice it was supposed to be private and broke everything.
+
+8) Consider the following program:
+
+    class Animal { make_sound() { print("running"); } }
+
+    class Cow : public Animal { make_sound() { print("moo"); } }
+
+    class Duck : public Animal { make_sound() { print("quack"); } }
+
+    void main() {
+        Cow c;
+        Duck d;
+
+        Animal* a1 = &c;
+        Animal* a2 = &d;
+
+        c.make_sound();
+        d.make_sound();
+
+        a1->make_sound();
+        a2->make_sound();
+    }
+
+    What will be printed if using
+a) static method binding?
+
+Static method binding will call the definition of make_sound() from the base class of Cow and Duck, Animal, so “running” will be printed.
+    
+b) dynamic method binding?
+
+Dynamic method binding will call the definition of make_sound() from the type of object referred to by C and D, so either “quack” or “moo” will be printed.
+   
+ c) If we wanted to add a "number_of_feet" field to animal, and ensure that it could not be incorrectly modified by a user of the Animal class, would it make sense to have the field be public, private, or protected?  Why?
+
+In this situation I think protected would be the right keyword to use for number_of_feet, because that way derived classes could inherit the field but would not be able to incorrectly modify it as well.
